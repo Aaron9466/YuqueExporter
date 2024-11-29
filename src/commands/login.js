@@ -63,8 +63,8 @@ async function login(userConfig) {
   await page.mouse.move(endX, startY, { steps: 10 });
   await page.mouse.up();
 
-  // 等待滑块验证
-  await new Promise(resolve => setTimeout(resolve, userConfig.puppeteer.slideSleep));
+  // 等待滑块验证请求完成
+  await page.waitForResponse(response => response.url().includes('/nocaptcha/analyze.jsonp') && response.status() === 200);
 
   // 点击登录
   await page.waitForSelector('button[data-testid="btnLogin"]');
@@ -89,7 +89,7 @@ export async function loginToYuque(options) {
     print('error', '语雀账号信息未配置，请先进行配置');
     return;
   }
-  
+
   if (!userConfig.puppeteer.chromePath) {
     print('error', '未指定 Chrome 路径，请先进行配置');
     return;

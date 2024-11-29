@@ -9,7 +9,6 @@ export const yuqueExporterDefaultConfig =
     {
         "chromePath": "",                   // Chrome浏览器路径，必须配置
         "headless": true,                   // puppeteer运行模式，默认无头模式
-        "slideSleep": 500,                  // 滑块验证等待时间，默认500ms
     },
     "account":                              // 语雀账号信息
     {
@@ -24,8 +23,8 @@ export const yuqueExporterDefaultConfig =
     },
     "output":                               // 输出配置
     {   
-        "docPath": "books",                 // 文档输出目录，可选配置，默认为./books
-        "imgPath": "imgs",                  // 图片输出目录，可选配置，默认为./imgs
+        "docPath": "books",                 // 文档输出目录，可选配置，默认为 项目根目录/books
+        "imgPath": "images",                // 图片输出目录，可选配置，默认为 项目根目录/images
     },
 }
 
