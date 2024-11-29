@@ -7,6 +7,9 @@
   "bin": {
     "yuque-exporter": "src/cli.js"
   },
+  "exports": {
+    "./utils/hook": "./src/utils/hook.js"
+  },
   "scripts": {
     "prepublishOnly": "chmod +x src/cli.js"
   },

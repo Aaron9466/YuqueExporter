@@ -1,6 +1,7 @@
 export const yuqueExporterFolder = 'yuque_exporter'
 export const yuqueDocDetailListCacheFolder = 'doc_detail_list_cache'
 export const yuqueExporterConfigFile = 'user_config.json'
+export const yuqueExporterHooksFile = 'user_hooks.js'
 
 export const yuqueExporterDefaultConfig =
 {
@@ -27,3 +28,24 @@ export const yuqueExporterDefaultConfig =
         "imgPath": "imgs",                  // 图片输出目录，可选配置，默认为./imgs
     },
 }
+
+export const yuqueExporterDefaultHooks = 
+`
+import { registerHook } from 'yuque-exporter/utils/hook'
+
+/**
+ * 注册自定义文档处理接口
+ * 可以在此处处理文档内容，比如替换图片链接等
+ * 
+ * @param {string} docContent 文档内容
+ * @param {object} docDetail 文档详情
+ * @return {string} 处理后的文档内容
+ */
+async function customHook(docContent, docDetail) {
+    // 自定义处理逻辑
+
+    return docContent;
+}
+
+registerHook(customHook);
+`

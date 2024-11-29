@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import { cwd } from 'process'
 import { print } from '../utils/log.js'
-import { yuqueExporterFolder, yuqueExporterConfigFile, yuqueExporterDefaultConfig } from '../index.js'
+import { yuqueExporterFolder, yuqueExporterConfigFile, yuqueExporterHooksFile, yuqueExporterDefaultHooks, yuqueExporterDefaultConfig } from '../index.js'
 
 export function initYuqueExporter() {
     print('info', '初始化开始...')
@@ -16,6 +16,11 @@ export function initYuqueExporter() {
     const configPath = path.join(cwd(), yuqueExporterFolder, yuqueExporterConfigFile);
     fs.writeFileSync(configPath, JSON.stringify(yuqueExporterDefaultConfig, null, 4));
     print('info', '创建默认配置文件');
+
+    // 创建默认插件文件
+    const hooksPath = path.join(cwd(), yuqueExporterFolder, yuqueExporterHooksFile);
+    fs.writeFileSync(hooksPath, yuqueExporterDefaultHooks);
+    print('info', '创建默认插件文件');
 
     // 将配置文件夹加入.gitignore
     const gitignorePath = path.join(cwd(), '.gitignore');

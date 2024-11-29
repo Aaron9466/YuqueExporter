@@ -5,6 +5,7 @@ import { JSDOM } from 'jsdom'
 import { cwd } from 'process'
 import { getUserConfig, getDocDetailListCache, setDocDetailListCache, isCookieExpired } from '../utils/cfg_mgt.js'
 import { print } from '../utils/log.js'
+import { loadUserHooks, runHooks } from "../utils/hook.js"
 
 const baseApiUrl = "https://www.yuque.com/api"
 const yuqueUrl = "https://www.yuque.com"
@@ -236,7 +237,11 @@ async function syncBook(bookSlug, forceSync) {
 
                         // 下载并替换图片
                         const newContent = await downloadAndReplaceImages(docParentPath, docContent, imgBasePath);
-                        fs.writeFileSync(filePath, newContent);
+
+                        // 调用用户注册的钩子
+                        const finalContent = await runHooks(newContent, docDetail);
+
+                        fs.writeFileSync(filePath, finalContent);
                     } else {
                         print('info', '文档 ' + docTitle + ' 未更新，跳过同步...');
                     }
@@ -285,6 +290,9 @@ export async function syncYuqueDocs(option) {
         print('error', 'Cookie 已过期，请重新登录');
         return;
     }
+
+    // 加载用户自定义钩子
+    await loadUserHooks();
 
     let forceSync = false;
     if (option && option.force) {
