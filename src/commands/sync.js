@@ -156,7 +156,7 @@ async function downloadAndReplaceImages(docParentPath, docContent, imagesDir) {
     return newContent;
 }
 
-async function syncBook(bookSlug) {
+async function syncBook(bookSlug, forceSync) {
     print('info', '开始同步 ' + bookSlug + ' 知识库...');
     try {
         const book = await getBook(bookSlug);
@@ -219,8 +219,12 @@ async function syncBook(bookSlug) {
                     const docDetail = docDetailMap.get(docId);
                     const docDetailCache = docDetailCacheMap.get(docId);
 
-                    if (!docDetailCache || docIsUpdated(docDetail, docDetailCache)) {
-                        print('info', '发现文档 ' + docTitle + ' 更新，开始同步...');
+                    if ((!docDetailCache || docIsUpdated(docDetail, docDetailCache)) || forceSync) {
+                        if (forceSync) {
+                            print('info', '同步文档 ' + docTitle);
+                        } else {
+                            print('info', '发现文档 ' + docTitle + ' 更新，开始同步...');
+                        }
                         // 如果文档存在，则删除旧文档及其图片
                         if (fs.existsSync(filePath)) {
                             deleteOldImages(filePath, imgBasePath);
@@ -260,7 +264,7 @@ async function syncBook(bookSlug) {
     }
 }
 
-export async function syncYuqueDocs(option) {
+export async function syncYuqueDocs(option) {    
     userConfig = getUserConfig();
     if (!userConfig) {
         print('error', '配置文件不存在，请先进行初始化');
@@ -282,8 +286,13 @@ export async function syncYuqueDocs(option) {
         return;
     }
 
+    let forceSync = false;
+    if (option && option.force) {
+        forceSync = true;        
+    }
+
     if (option && option.book) {
-        await syncBook(option.book);
+        await syncBook(option.book, forceSync);
     } else {
         if (userConfig.sync.books.length === 0) {
             print('error', '未指定和配置需要同步的知识库，请指定或进行配置');
@@ -291,7 +300,7 @@ export async function syncYuqueDocs(option) {
         }
         for (let i = 0; i < userConfig.sync.books.length; i++) {
             const book = userConfig.sync.books[i];
-            await syncBook(book);
+            await syncBook(book, forceSync);
         }
     }
 }

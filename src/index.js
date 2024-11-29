@@ -1,4 +1,5 @@
 export const yuqueExporterFolder = 'yuque_exporter'
+export const yuqueDocDetailListCacheFolder = 'doc_detail_list_cache'
 export const yuqueExporterConfigFile = 'user_config.json'
 
 export const yuqueExporterDefaultConfig =

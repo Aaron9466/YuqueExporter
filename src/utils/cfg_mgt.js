@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import { cwd } from 'process'
-import { yuqueExporterFolder, yuqueExporterConfigFile } from '../index.js'
+import { yuqueExporterFolder, yuqueDocDetailListCacheFolder, yuqueExporterConfigFile } from '../index.js'
 
 export function isCookieExpired(cookieString) {
     // 正则表达式用于匹配expires时间
@@ -30,20 +30,42 @@ export function getUserConfig() {
 
 export function setUserConfig(config) {
     const userConfigPath = path.join(cwd(), yuqueExporterFolder, yuqueExporterConfigFile);
+
+    const dir = path.dirname(userConfigPath);
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+    }
+
     fs.writeFileSync(userConfigPath, JSON.stringify(config, null, 4));
 }
 
 export function setDocDetailListCache(bookSlug, docDetailList) {
-    const cachePath = path.join(cwd(), yuqueExporterFolder, bookSlug + '_cache.json');
+    const cachePath = path.join(cwd(), yuqueExporterFolder, yuqueDocDetailListCacheFolder, bookSlug + '_cache.json');
+    
+    const dir = path.dirname(cachePath);
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+    }
+
     fs.writeFileSync(cachePath, JSON.stringify(docDetailList, null, 4));
 }
 
 export function getDocDetailListCache(bookSlug) {
-    const cachePath = path.join(cwd(), yuqueExporterFolder, bookSlug + '_cache.json');
+    const cachePath = path.join(cwd(), yuqueExporterFolder, yuqueDocDetailListCacheFolder, bookSlug + '_cache.json');
 
     if (!fs.existsSync(cachePath)) {
         return null;
     }
 
     return JSON.parse(fs.readFileSync(cachePath, 'utf-8'));
+}
+
+export function deleteAllDocDetailListCache() {
+    const cacheFolderPath = path.join(cwd(), yuqueExporterFolder, yuqueDocDetailListCacheFolder);
+
+    if (!fs.existsSync(cacheFolderPath)) {
+        return;
+    }
+
+    fs.rmSync(cacheFolderPath, { recursive: true, force: true });
 }

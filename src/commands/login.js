@@ -95,7 +95,7 @@ export async function loginToYuque(options) {
     return;
   }
 
-  if (!options || !options.focus) {
+  if (!options || !options.force) {
     if (userConfig.account.cookies && !isCookieExpired(userConfig.account.cookies)) {
       print('success', 'Cookie 有效，无需重复登录')
       return;
