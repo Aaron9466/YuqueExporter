@@ -11,11 +11,12 @@ export function registerHook(hookFunction) {
     hooks.push(hookFunction);
 }
 
-export async function runHooks(docContent, docDetail) {    
+export async function runHooks(docContent, docDetail, docPath, bookSlug) {    
+    let modifiedDocContent = docContent;
     for (const hook of hooks) {
-        docContent = await hook(docContent, docDetail);
+        modifiedDocContent = await hook(docContent, docDetail, docPath, bookSlug);
     }
-    return docContent;
+    return modifiedDocContent;
 }
 
 export async function loadUserHooks() {

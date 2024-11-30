@@ -39,9 +39,11 @@ import { registerHook } from '@singlemoonlight/yuque-exporter/hook'
  * 
  * @param {string} docContent 文档内容
  * @param {object} docDetail 文档详情
+ * @param {string} docPath 文档路径
+ * @param {string} bookSlug 知识库标识
  * @return {string} 处理后的文档内容
  */
-async function customHook(docContent, docDetail) {
+async function customHook(docContent, docDetail, docPath, bookSlug) {
     // 自定义处理逻辑
 
     return docContent;

@@ -242,7 +242,7 @@ async function syncBook(bookSlug, forceSync) {
                         const newContent = await downloadAndReplaceImages(docParentPath, docContent, imgBasePath);
 
                         // 调用用户注册的钩子
-                        const finalContent = await runHooks(newContent, docDetail);
+                        const finalContent = await runHooks(newContent, docDetail, filePath, bookSlug);
 
                         fs.writeFileSync(filePath, finalContent);
                     } else {
