@@ -1,7 +1,7 @@
 {
   "name": "yuque-exporter",
   "version": "1.0.0",
-  "description": "一个基于账号密码的个人语雀文档批量导出工具",
+  "description": "一个基于账号密码的个人语雀 Markdown 文档批量导出工具",
   "type": "module",
   "main": "index.js",
   "bin": {
@@ -11,7 +11,9 @@
     "./utils/hook": "./src/utils/hook.js"
   },
   "scripts": {
-    "prepublishOnly": "chmod +x src/cli.js"
+    "prepublishOnly": "chmod +x src/cli.js",
+    "postinstall": "node src/postinstall.js",
+    "yuque-exporter": "yuque-exporter"
   },
   "keywords": [
     "yuque",
