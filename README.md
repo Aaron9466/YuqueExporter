@@ -2,19 +2,29 @@
 
 一个基于账号密码的个人语雀 Markdown 文档批量导出工具，使用简单便捷。
 
-- 支持按目录批量导出文档
-- 支持多知识库批量导出
-- 支持文档图片导出
-- 支持自定义文档处理器
++ 支持按目录批量导出文档
++ 支持多知识库批量导出
++ 支持文档图片导出
++ 支持自定义文档处理器
 
 # 快速开始
 
-项目依赖 puppeteer-core ，请确保已安装谷歌浏览器。
+项目依赖`puppeteer-core`，请确保已安装谷歌浏览器。
 
 ## 安装
 
 ```bash
 npm i @singlemoonlight/yuque-exporter
+```
+
+
+
+安装完成后请在`package.json`文件中添加以下命令，如果不添加，后续命令请将`npm run`替换为`npx`。
+
+```json
+"scripts": {
+    "yuque-exporter": "yuque-exporter"
+},
 ```
 
 ## 初始化
@@ -45,13 +55,13 @@ npm run yuque-exporter init
         "books": []
     },
     "output": {
-        "docPath": "books",
+        "bookPath": "books",
         "imgPath": "images"
     }
 }
 ```
 
-各个配置含义如下：
+各个配置含义以及示例如下：
 
 | 配置项     | 含义                                                         | 是否必须配置 | 示例                                                         |
 | ---------- | ------------------------------------------------------------ | ------------ | ------------------------------------------------------------ |
@@ -62,13 +72,14 @@ npm run yuque-exporter init
 | cookies    | 语雀登录cookie，登录后自动生成                               | 否           | /                                                            |
 | repo       | 语雀个人路径                                                 | 是           | `"smilingly"`                                                |
 | books      | 需要同步的语雀知识库列表，如果通过指定知识库的方式就不需要配置 | 否           | `["note", "code"]`                                           |
-| docPath    | 文档输出目录，默认为 项目根目录/books                        | 否           | `books`、`dir/books`                                         |
+| bookPath    | 文档输出目录，默认为 项目根目录/books                        | 否           | `books`、`dir/books`                                         |
 | imgPath    | 图片输出目录，默认为 项目根目录/images                       | 否           | `images`、`dir/images`                                       |
+
 
 ### 默认用户插件文件
 
 ```javascript
-import { registerHook } from 'yuque-exporter/utils/hook'
+import { registerHook } from '@singlemoonlight/yuque-exporter/hook'
 
 /**
  * 注册自定义文档处理接口
@@ -87,7 +98,7 @@ async function customHook(docContent, docDetail) {
 registerHook(customHook);
 ```
 
-该文件已提供基本框架，如有自定义文档处理的需求，可进行修改。
+该文件已提供基本框架，如有自定义文档处理的需求，可对`customHook`接口进行修改，或者通过`registerHook`接口注册其他钩子。
 
 ## 登录
 
@@ -96,6 +107,8 @@ npm run yuque-exporter login
 ```
 
 ## 同步文档
+
+完成初始化、配置和登录后，后续同步文档不需要再执行上述步骤。如果语雀`Cookies`过期，需要重新登录。
 
 ```bash
 npm run yuque-exporter sync

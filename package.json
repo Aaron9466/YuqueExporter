@@ -1,6 +1,6 @@
 {
   "name": "@singlemoonlight/yuque-exporter",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "一个基于账号密码的个人语雀 Markdown 文档批量导出工具",
   "type": "module",
   "main": "index.js",
@@ -8,12 +8,10 @@
     "yuque-exporter": "src/cli.js"
   },
   "exports": {
-    "./utils/hook": "./src/utils/hook.js"
+    "./hook": "./src/utils/hook.js"
   },
   "scripts": {
-    "prepublishOnly": "chmod +x src/cli.js",
-    "postinstall": "node src/postinstall.js",
-    "yuque-exporter": "yuque-exporter"
+    "prepublishOnly": "chmod +x src/cli.js"
   },
   "keywords": [
     "yuque",

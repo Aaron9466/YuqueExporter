@@ -193,11 +193,11 @@ async function syncBook(bookSlug, forceSync) {
             bookTocMap.set(item.uuid, item);
         });
 
-        const docBasePath = path.join(cwd(), userConfig.output.docPath, book.name);
+        const bookBasePath = path.join(cwd(), userConfig.output.bookPath, book.name);
         const imgBasePath = path.join(cwd(), userConfig.output.imgPath);
         // 创建文档存放目录
-        if (!fs.existsSync(docBasePath)) {
-            fs.mkdirSync(docBasePath, { recursive: true });
+        if (!fs.existsSync(bookBasePath)) {
+            fs.mkdirSync(bookBasePath, { recursive: true });
         }
 
         // 创建图片存放目录
@@ -211,7 +211,7 @@ async function syncBook(bookSlug, forceSync) {
             const docTitle = item.title;
             const docParentUuid = item.parent_uuid;
             const docId = item.doc_id;
-            const docParentPath = getParentPath(bookTocMap, docParentUuid, docBasePath);
+            const docParentPath = getParentPath(bookTocMap, docParentUuid, bookBasePath);
 
             switch (docType) {
                 case 'DOC':

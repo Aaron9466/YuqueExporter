@@ -23,14 +23,14 @@ export const yuqueExporterDefaultConfig =
     },
     "output":                               // 输出配置
     {   
-        "docPath": "books",                 // 文档输出目录，可选配置，默认为 项目根目录/books
+        "bookPath": "books",                 // 文档输出目录，可选配置，默认为 项目根目录/books
         "imgPath": "images",                // 图片输出目录，可选配置，默认为 项目根目录/images
     },
 }
 
 export const yuqueExporterDefaultHooks = 
 `
-import { registerHook } from 'yuque-exporter/utils/hook'
+import { registerHook } from '@singlemoonlight/yuque-exporter/hook'
 
 /**
  * 注册自定义文档处理接口

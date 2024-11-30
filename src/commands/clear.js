@@ -6,12 +6,12 @@ import { getUserConfig, deleteAllDocDetailListCache } from '../utils/cfg_mgt.js'
 
 export async function clearSyncedDocs() {
     const userConfig = getUserConfig();
-    const docPath = path.join(cwd(), userConfig.output.docPath);
+    const bookPath = path.join(cwd(), userConfig.output.bookPath);
     const imgPath = path.join(cwd(), userConfig.output.imgPath);
 
     print('info', '清除已同步文档...');
     try {
-        fs.rmSync(docPath, { recursive: true, force: true });
+        fs.rmSync(bookPath, { recursive: true, force: true });
     } catch (error) {
         print('error', '清除文档失败，请检查文档目录是否存在');
         return;
