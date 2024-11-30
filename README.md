@@ -29,7 +29,7 @@ npm run yuque-exporter init
 
 ### 默认用户配置文件
 
-```
+```json
 {
     "puppeteer": {
         "chromePath": "",
@@ -67,7 +67,7 @@ npm run yuque-exporter init
 
 ### 默认用户插件文件
 
-```
+```javascript
 import { registerHook } from 'yuque-exporter/utils/hook'
 
 /**
@@ -91,19 +91,19 @@ registerHook(customHook);
 
 ## 登录
 
-```
+```bash
 npm run yuque-exporter login
 ```
 
 ## 同步文档
 
-```
+```bash
 npm run yuque-exporter sync
 ```
 
 ## 删除文档
 
-```
+```bash
 npm run yuque-exporter clear
 ```
 
