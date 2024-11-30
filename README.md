@@ -14,7 +14,7 @@
 ## 安装
 
 ```bash
-npm install yuque-exporter
+npm i @singlemoonlight/yuque-exporter
 ```
 
 ## 初始化
