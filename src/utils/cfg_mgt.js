@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import { cwd } from 'process'
-import { yuqueExporterFolder, yuqueDocDetailListCacheFolder, yuqueExporterConfigFile } from '../index.js'
+import { yuqueExporterFolder, yuqueDocDetailListCacheFolder, yuqueExporterConfigFile, yuqueExporterBookDirListFile } from '../index.js'
 
 export function isCookieExpired(cookieString) {
     // 正则表达式用于匹配expires时间
@@ -68,4 +68,37 @@ export function deleteAllDocDetailListCache() {
     }
 
     fs.rmSync(cacheFolderPath, { recursive: true, force: true });
+}
+
+export function getBookDirList() {
+    const bookDirListPath = path.join(cwd(), yuqueExporterFolder, yuqueExporterBookDirListFile);
+
+    if (!fs.existsSync(bookDirListPath)) {
+        return null;
+    }
+
+    return JSON.parse(fs.readFileSync(bookDirListPath, 'utf-8'));
+}
+
+export function setBookDirList(bookSlug, bookPath) {
+    const bookDirListPath = path.join(cwd(), yuqueExporterFolder, yuqueExporterBookDirListFile);
+
+    const dir = path.dirname(bookDirListPath);
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+    }
+
+    const bookDirList = getBookDirList() || [];
+    // 如果bookSlug不存在，则添加，否则更新
+    const bookDir = bookDirList.find(item => item.bookSlug === bookSlug);
+    if (!bookDir) {
+        bookDirList.push({
+            bookSlug: bookSlug,
+            bookPath: bookPath
+        });
+    } else {
+        bookDir.bookPath = bookPath;
+    }
+
+    fs.writeFileSync(bookDirListPath, JSON.stringify(bookDirList, null, 4));
 }

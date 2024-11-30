@@ -4,7 +4,7 @@ import { cwd } from 'process'
 import { print } from '../utils/log.js'
 import { yuqueExporterFolder, yuqueExporterConfigFile, yuqueExporterHooksFile, yuqueExporterDefaultHooks, yuqueExporterDefaultConfig } from '../index.js'
 
-export function initYuqueExporter() {
+export async function initYuqueExporter() {
     print('info', '初始化开始...')
 
     // 创建配置文件夹

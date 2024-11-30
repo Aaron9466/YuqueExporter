@@ -3,7 +3,7 @@ import fs from 'fs'
 import path from 'path'
 import { JSDOM } from 'jsdom'
 import { cwd } from 'process'
-import { getUserConfig, getDocDetailListCache, setDocDetailListCache, isCookieExpired } from '../utils/cfg_mgt.js'
+import { getUserConfig, getDocDetailListCache, setDocDetailListCache, setBookDirList, isCookieExpired } from '../utils/cfg_mgt.js'
 import { print } from '../utils/log.js'
 import { loadUserHooks, runHooks } from "../utils/hook.js"
 
@@ -187,7 +187,7 @@ async function syncBook(bookSlug, forceSync) {
             docDetailMap.set(doc.id, doc);
         };
 
-        const bookToc = book.toc;
+        const bookToc = book.toc;        
         // 首先将所有条目映射到map中
         bookToc.forEach(item => {
             bookTocMap.set(item.uuid, item);
@@ -205,6 +205,9 @@ async function syncBook(bookSlug, forceSync) {
             fs.mkdirSync(imgBasePath, { recursive: true });
         }
 
+        // 记录生成知识库路径
+        setBookDirList(bookSlug, bookBasePath);
+ 
         // 处理每个条目
         for (const item of bookToc) {
             const docType = item.type;
@@ -269,7 +272,7 @@ async function syncBook(bookSlug, forceSync) {
     }
 }
 
-export async function syncYuqueDocs(option) {    
+export async function syncYuqueDocs(option) {
     userConfig = getUserConfig();
     if (!userConfig) {
         print('error', '配置文件不存在，请先进行初始化');
@@ -293,10 +296,10 @@ export async function syncYuqueDocs(option) {
 
     // 加载用户自定义钩子
     await loadUserHooks();
-
+    
     let forceSync = false;
     if (option && option.force) {
-        forceSync = true;        
+        forceSync = true;
     }
 
     if (option && option.book) {
@@ -310,5 +313,5 @@ export async function syncYuqueDocs(option) {
             const book = userConfig.sync.books[i];
             await syncBook(book, forceSync);
         }
-    }
+    }    
 }
