@@ -125,6 +125,7 @@ async function downloadAndReplaceImages(docParentPath, docContent, imagesDir) {
     const imgRegex = /!\[(.*?)\]\((.*?)\)/g;
     let match;
     let newContent = docContent;
+    const downloadPromises = [];
 
     while ((match = imgRegex.exec(docContent)) !== null) {
         const imgSrc = match[2];
@@ -133,26 +134,42 @@ async function downloadAndReplaceImages(docParentPath, docContent, imagesDir) {
         const relativePath = path.relative(docParentPath, imgDestPath).replace(/\\/g, '/');
 
         // 下载图片
-        try {
-            const response = await axios({
+        const downloadPromise = new Promise((resolve, reject) => {
+            axios({
                 url: imgSrc,
                 method: 'GET',
                 responseType: 'stream',
                 headers: {
                     cookie: userConfig.account.cookies,
                 },
+            }).then(response => {
+                const writer = fs.createWriteStream(imgDestPath);
+                response.data.pipe(writer);
+
+                writer.on('finish', () => {
+                    print('info', '下载图片成功：' + imgSrc + ' -> ' + imgDestPath);
+                    resolve();
+                });
+
+                writer.on('error', (err) => {
+                    print('error', '图片保存失败：' + imgSrc);
+                    reject(err);
+                });
+            }).catch(error => {
+                print('error', '下载图片失败：' + imgSrc);
+                reject(error);
             });
-            response.data.pipe(fs.createWriteStream(imgDestPath));
-            print('info', '下载图片成功：' + imgSrc + ' -> ' + imgDestPath);
-        } catch (error) {
-            print('error', '下载图片失败：' + imgSrc);
-            continue;
-        }
+        });
+
+        downloadPromises.push(downloadPromise);
 
         // 替换图片链接
         const altText = match[1]; // 提取 alt 文本
         newContent = newContent.replace(match[0], `![${altText}](${relativePath})`);
     }
+
+    // 等待所有图片下载完成
+    await Promise.all(downloadPromises);
 
     return newContent;
 }
@@ -187,7 +204,7 @@ async function syncBook(bookSlug, forceSync) {
             docDetailMap.set(doc.id, doc);
         };
 
-        const bookToc = book.toc;        
+        const bookToc = book.toc;
         // 首先将所有条目映射到map中
         bookToc.forEach(item => {
             bookTocMap.set(item.uuid, item);
@@ -207,7 +224,7 @@ async function syncBook(bookSlug, forceSync) {
 
         // 记录生成知识库路径
         setBookDirList(bookSlug, bookBasePath);
- 
+
         // 处理每个条目
         for (const item of bookToc) {
             const docType = item.type;
@@ -296,7 +313,7 @@ export async function syncYuqueDocs(option) {
 
     // 加载用户自定义钩子
     await loadUserHooks();
-    
+
     let forceSync = false;
     if (option && option.force) {
         forceSync = true;
@@ -313,5 +330,5 @@ export async function syncYuqueDocs(option) {
             const book = userConfig.sync.books[i];
             await syncBook(book, forceSync);
         }
-    }    
+    }
 }
