@@ -129,6 +129,10 @@ async function downloadAndReplaceImages(docParentPath, docContent, imagesDir) {
 
     while ((match = imgRegex.exec(docContent)) !== null) {
         const imgSrc = match[2];
+        if (!imgSrc.startsWith("http")) {
+            print('warn', '忽略图片下载，图片地址错误 ' + imgSrc);
+            continue
+        }
         const imgName = path.basename(imgSrc);
         const imgDestPath = path.join(imagesDir, imgName);
         const relativePath = path.relative(docParentPath, imgDestPath).replace(/\\/g, '/');
@@ -174,7 +178,7 @@ async function downloadAndReplaceImages(docParentPath, docContent, imagesDir) {
     return newContent;
 }
 
-async function syncBook(bookSlug, forceSync) {
+async function syncBook(bookSlug, forceSync, skipWhenDocNameEqual) {
     print('info', '开始同步 ' + bookSlug + ' 知识库...');
     try {
         const book = await getBook(bookSlug);
@@ -196,11 +200,10 @@ async function syncBook(bookSlug, forceSync) {
         if (!docDetailList) return;
         print('info', '获取到 ' + docDetailList.length + ' 篇文章');
         for (const doc of docDetailList) {
-            // 获取文章标签
-            const tags = await getDocTags(doc.id);
-            const tagTitles = tags.map(tag => tag.title);
-            doc.tag = tagTitles;
-
+            // 这个地方耗时，而且tag没有地方使用，屏蔽掉了
+            // const tags = await getDocTags(doc.id);
+            // const tagTitles = tags.map(tag => tag.title);
+            // doc.tag = tagTitles;
             docDetailMap.set(doc.id, doc);
         };
 
@@ -225,10 +228,12 @@ async function syncBook(bookSlug, forceSync) {
         // 记录生成知识库路径
         setBookDirList(bookSlug, bookBasePath);
 
+
         // 处理每个条目
         for (const item of bookToc) {
             const docType = item.type;
-            const docTitle = item.title;
+            const docTitleOrigin = item.title;
+            const docTitle = docTitleOrigin.replaceAll("/", " ")
             const docParentUuid = item.parent_uuid;
             const docId = item.doc_id;
             const docParentPath = getParentPath(bookTocMap, docParentUuid, bookBasePath);
@@ -241,17 +246,18 @@ async function syncBook(bookSlug, forceSync) {
                     const docDetailCache = docDetailCacheMap.get(docId);
 
                     if ((!docDetailCache || docIsUpdated(docDetail, docDetailCache)) || forceSync) {
-                        if (forceSync) {
-                            print('info', '同步文档 ' + docTitle);
-                        } else {
-                            print('info', '发现文档 ' + docTitle + ' 更新，开始同步...');
-                        }
                         // 如果文档存在，则删除旧文档及其图片
                         if (fs.existsSync(filePath)) {
+                            if (skipWhenDocNameEqual) {
+                                print('info', '发现文档 ' + docTitle + ' 更新，同名文档跳过更新');
+                                continue;
+                            }
+                            print('info', '发现文档 ' + docTitle + ' 更新...');
                             deleteOldImages(filePath, imgBasePath);
                             fs.unlinkSync(filePath);
+                        } else {
+                            print('info', '发现新文档 ' + docTitle + ' 下载，开始同步...');
                         }
-
                         const docContent = await getDocContent(docDetail.slug, docDetail.book_id);
                         if (!docContent) continue;
 
@@ -319,8 +325,10 @@ export async function syncYuqueDocs(option) {
         forceSync = true;
     }
 
+    const skipWhenDocNameEqual = userConfig.sync.skipWhenDocNameEqual
+
     if (option && option.book) {
-        await syncBook(option.book, forceSync);
+        await syncBook(option.book, forceSync, skipWhenDocNameEqual);
     } else {
         if (userConfig.sync.books.length === 0) {
             print('error', '未指定和配置需要同步的知识库，请指定或进行配置');
@@ -328,7 +336,7 @@ export async function syncYuqueDocs(option) {
         }
         for (let i = 0; i < userConfig.sync.books.length; i++) {
             const book = userConfig.sync.books[i];
-            await syncBook(book, forceSync);
+            await syncBook(book, forceSync, skipWhenDocNameEqual);
         }
     }
 }

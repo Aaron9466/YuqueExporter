@@ -21,6 +21,7 @@ export const yuqueExporterDefaultConfig =
     {
         "repo": "",                         // 语雀个人路径，必须配置
         "books": [],                        // 需要同步的语雀知识库列表，可选配置，如果通过指定知识库的方式就不需要配置，否则必须配置
+        "skipWhenDocNameEqual": false       // 文章名称相同时跳过下载和更新，使用-f进行强制更新时该配置仍然有效
     },
     "output":                               // 输出配置
     {   

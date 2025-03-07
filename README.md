@@ -58,7 +58,8 @@ npm run yuque-exporter init
     },
     "sync": {
         "repo": "",
-        "books": []
+        "books": [],
+        "skipWhenDocNameEqual": false
     },
     "output": {
         "docPath": "books",
@@ -69,18 +70,18 @@ npm run yuque-exporter init
 
 各个配置含义以及示例如下：
 
-| 配置项     | 含义                                                         | 是否必须配置 | 示例                                                         |
-| ---------- | ------------------------------------------------------------ | ------------ | ------------------------------------------------------------ |
-| chromePath | 本地谷歌浏览器路径，一般是                                   | 是           | `"C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe"` |
-| headless   | puppeteer登录行为，无头模式不会启动页面                      | 否           | /                                                            |
-| user       | 语雀登录账号                                                 | 是           | `"***********"`                                              |
-| password   | 语雀登录密码                                                 | 是           | `"********"`                                                 |
-| cookies    | 语雀登录cookie，登录后自动生成                               | 否           | /                                                            |
-| repo       | 语雀个人路径                                                 | 是           | `"my-yuque-repo"`                                                |
-| books      | 需要同步的语雀知识库列表，如果通过指定知识库的方式就不需要配置 | 否           | `["note", "code"]`                                           |
-| docPath    | 文档输出目录，默认为 项目根目录/books                        | 否           | `books`、`dir/books`                                         |
-| imgPath    | 图片输出目录，默认为 项目根目录/images                       | 否           | `images`、`dir/images`                                       |
-
+| 配置项     | 含义                           | 是否必须配置 | 示例                                                                                                                                                        |
+| ---------- |------------------------------|--------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| chromePath | 本地谷歌浏览器路径                    | 是      | windows `"C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe"` <br/> Mac os`"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"` |
+| headless   | puppeteer登录行为，无头模式不会启动页面     | 否      | /                                                                                                                                                         |
+| user       | 语雀登录账号                       | 是      | `"***********"`                                                                                                                                           |
+| password   | 语雀登录密码                       | 是      | `"********"`                                                                                                                                              |
+| cookies    | 语雀登录cookie，登录后自动生成           | 否      | /                                                                                                                                                         |
+| repo       | 语雀个人路径                       | 是      | `"my-yuque-repo"`                                                                                                                                         |
+| books      | 需要同步的语雀知识库列表，如果通过指定知识库的方式就不需要配置 | 否      | `["note", "code"]`                                                                                                                                        |
+| docPath    | 文档输出目录，默认为 项目根目录/books       | 否      | `books`、`dir/books`                                                                                                                                       |
+| imgPath    | 图片输出目录，默认为 项目根目录/images      | 否      | `images`、`dir/images`                                                                                                                                     |
+| skipWhenDocNameEqual  | 文档名称相同时跳过下载和更新，使用-f进行强制更新时该配置仍然有效 | 是      | false                                                                                                                                                     |
 
 其中需要对以下几个配置进一步说明：
 
@@ -91,6 +92,8 @@ npm run yuque-exporter init
 `docPath`：文档输出目录，会将配置的知识库按照语雀目录的形式整体放在该目录下。文档输出目录是基于本地项目的根目录的，也就是说最后文档所在目录是`本地项目根目录/docPath`。
 
 `imgPath`：图片输出目录，会将所有文档里的图片全部集中放在该目录下。图片输出目录是基于本地项目的根目录的，也就是说最后图片所在目录是`本地项目根目录/imgPath`。图片输出目录强烈建议使用一个独立的目录，即除了输出图片，不存放其他文件。
+
+`skipWhenDocNameEqual`：设置为true时，文档名称相同时跳过下载和更新，使用-f进行强制更新时该配置仍然有效。当一本book中有大量文档时能显著提升速度，下载中断后再次执行命令重试下载时将跳过已下载的文档；对于已下载完成的book使用-f参数进行强制更新的场景，将增量下载新增的文档，不会更新已下载文档，需要更新文档的将改配置设置为false即可
 
 #### 默认用户插件
 
@@ -166,7 +169,7 @@ npm run yuque-exporter sync
 npm run yuque-exporter -- sync -b book
 ```
 
-当知识库同步完成后，如果文档更新了，此时再执行同步命令，只会同步更新了的文档。如果想想强制进行同步，可以添加`-f`选项。
+当知识库同步完成后，如果文档更新了，此时再执行同步命令，只会同步更新了的文档。如果想想强制进行同步，可以添加`-f`选项。通过获取到的文章更新时间和本地缓存对比，如果文章更新时间相同则不更新，如果没有找到缓存，将更新，如果包含大量文章，且需要更新，可保留缓存文件。skipWhenDocNameEqual为true时会跳过同一book下同名文章更新
 
 ```bash
 npm run yuque-exporter -- sync -f
