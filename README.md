@@ -12,21 +12,17 @@
 项目依赖`puppeteer-core`，使用`puppeteer`模拟用户的登录操作，因此请确保已安装谷歌浏览器。
 
 ### 安装
-
-使用以下命令安装`yuque-exporter`，默认会安装最新版本。
+1. 下载源码  
+2. 安装依赖，在项目根目录执行下面命令安装依赖
 
 ```bash
-npm i @singlemoonlight/yuque-exporter
+npm install
 ```
 
+3. 如果是mac os或者linux系统，安装完成后执行`chmod-cli`给cli.js执行权限
 
-
-安装完成后请在`package.json`文件中添加以下命令，如果不添加，后续命令请将`npm run`替换为`npx`。
-
-```json
-"scripts": {
-    "yuque-exporter": "yuque-exporter"
-},
+```bash
+npm run chmod-cli
 ```
 
 ### 初始化
@@ -184,12 +180,3 @@ npm run yuque-exporter -- sync -f
 ```bash
 npm run yuque-exporter clear
 ```
-
-## 问题或者疑问
-
-如果有使用问题或者疑问，可以在下面留言，或者直接在 GitHub 上提 issue。
-
-> 仓库：https://github.com/SingleMoonlight/YuqueExporter
->
-> 原始文档：https://blog.ifback.com/article/yuque-exporter-a-document-bulk-export-tool
-

@@ -11,7 +11,7 @@
     "./hook": "./src/utils/hook.js"
   },
   "scripts": {
-    "prepublishOnly": "chmod +x src/cli.js",
+    "chmod-cli": "chmod +x src/cli.js",
     "yuque-exporter": "src/cli.js"
   },
   "keywords": [
